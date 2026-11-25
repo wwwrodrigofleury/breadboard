@@ -1,0 +1,21 @@
+{
+  "name": "breadboard-lab-sistemas-logicos",
+  "version": "1.0.0",
+  "description": "Simulador Interativo de Breadboard e Laboratório Virtual para Sistemas Lógicos - LEI / IPCB",
+  "type": "module",
+  "main": "js/app.js",
+  "scripts": {
+    "test": "node tests/engine.test.js",
+    "start": "npx serve . -l 3000"
+  },
+  "keywords": [
+    "breadboard",
+    "digital-logic",
+    "circuit-simulator",
+    "74ls-chips",
+    "ipcb",
+    "sistemas-logicos"
+  ],
+  "author": "Antigravity AI (for LEI / IPCB)",
+  "license": "MIT"
+}

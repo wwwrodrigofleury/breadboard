@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulador de Breadboard & Trainer · Sistemas Lógicos (LEI / IPCB)</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="app-navbar">
+    <!-- Brand & Lab Info -->
+    <div class="nav-brand">
+      <span class="brand-icon">🔬</span>
+      <div>
+        <div class="brand-title">
+          <span>LogiBoard Studio</span>
+          <span class="brand-badge">IPCB · LEI</span>
+        </div>
+        <div class="brand-dept">Bancada Virtual de Montagem · IDL-800</div>
+      </div>
+    </div>
+
+    <!-- Center Quick Tips (Tudo via cliques do mouse) -->
+    <div class="nav-tips-center">
+      <span class="tip-pill"><kbd>Esq.</kbd> Ligar Fio</span>
+      <span class="tip-pill"><kbd>Dir.</kbd> Cor do Fio / Opções CI</span>
+      <span class="tip-pill"><kbd>Meio</kbd> Escolher e Inserir CI</span>
+      <span class="tip-pill"><kbd>Scroll</kbd> Zoom na Placa</span>
+    </div>
+
+    <!-- Right Actions: Sidebar Toggles, Clear, Audio, Save/Load, Help -->
+    <div class="nav-actions-right">
+      <button class="btn-nav" id="btn-toggle-sidebar-left" title="Ocultar / Mostrar Catálogo de CIs">
+        <span>◧ CIs</span>
+      </button>
+      <button class="btn-nav" id="btn-toggle-sidebar-right" title="Ocultar / Mostrar Roteiro de Exercícios">
+        <span>◨ Exercícios</span>
+      </button>
+      <div class="nav-separator"></div>
+      <button class="btn-nav" id="btn-clear-all" title="Limpar breadboard completamente">
+        <span>🗑 Limpar Tudo</span>
+      </button>
+      <button class="btn-nav" id="btn-toggle-sound" title="Ligar / Desligar Efeitos Sonoros">
+        <span>🔊 Som</span>
+      </button>
+      <button class="btn-nav" id="btn-export-circuit" title="Exportar circuito para ficheiro JSON">
+        <span>💾 Guardar</span>
+      </button>
+      <button class="btn-nav" id="btn-import-circuit" title="Carregar circuito a partir de ficheiro JSON">
+        <span>📂 Abrir</span>
+      </button>
+      <input type="file" id="import-file-input" accept=".json" style="display:none;">
+
+      <button class="btn-nav btn-nav-primary" id="btn-open-guide">
+        <span>📘 Ajuda</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ALERT STATUS BANNER (Short circuits, unpowered CIs) -->
+  <div class="status-banner" id="lab-status-banner"></div>
+
+  <!-- WORKSPACE CONTAINER -->
+  <main class="app-workspace" id="app-workspace">
+    <!-- LEFT SIDEBAR: CHIP CATALOG -->
+    <aside class="sidebar-chips" id="sidebar-chips">
+      <div class="sidebar-header">
+        <span class="sidebar-title">Portas & CIs (74xx)</span>
+        <button class="btn-collapse-sidebar" id="btn-collapse-left" title="Minimizar barra lateral">◀</button>
+      </div>
+      <div class="chips-list-scroll" id="chips-list">
+        <!-- Injected dynamically by app.js -->
+      </div>
+    </aside>
+
+    <!-- FLOATING TAB TO RE-OPEN LEFT SIDEBAR -->
+    <button class="sidebar-tab-trigger left hidden" id="tab-open-left" title="Abrir Catálogo de Componentes">
+      ▶ Portas & CIs
+    </button>
+
+    <!-- CENTER WORKBENCH: INTEGRATED BREADBOARD & TRAINER STATION -->
+    <section class="workbench-center">
+      <div id="trainer-mount" style="display:none;"></div>
+      <!-- INTERACTIVE BREADBOARD CANVAS -->
+      <div id="breadboard-mount"></div>
+
+      <!-- FLOATING ZOOM CONTROLS -->
+      <div class="bb-zoom-controls" id="bb-zoom-controls">
+        <button class="zoom-btn" id="btn-zoom-in" title="Aumentar Zoom (+)">➕</button>
+        <button class="zoom-btn" id="btn-zoom-out" title="Diminuir Zoom (-)">➖</button>
+        <button class="zoom-btn" id="btn-zoom-reset" title="Redefinir Zoom (100%)">↺ 100%</button>
+        <span class="zoom-level-text" id="zoom-level-text">100%</span>
+      </div>
+    </section>
+
+    <!-- FLOATING TAB TO RE-OPEN RIGHT SIDEBAR -->
+    <button class="sidebar-tab-trigger right hidden" id="tab-open-right" title="Abrir Roteiro de Práticas">
+      ◀ Exercícios & Testes
+    </button>
+
+    <!-- RIGHT SIDEBAR: EXERCISES & AUTOMATED TESTBENCH -->
+    <aside class="sidebar-exercises" id="sidebar-exercises">
+      <div class="sidebar-exercises-header">
+        <button class="btn-collapse-sidebar" id="btn-collapse-right" title="Minimizar barra lateral">▶</button>
+      </div>
+      <div id="exercises-mount"></div>
+    </aside>
+  </main>
+
+  <!-- MODAL OVERLAY (Datasheet & Guide) -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Detalhes do Componente</h3>
+        <button class="btn-close-modal" id="btn-close-modal">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Content injected dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- FLOATING CONTEXT MENU (Wire color, Delete CI, etc.) -->
+  <div class="custom-context-menu context-menu hidden" id="app-context-menu"></div>
+
+  <!-- MIDDLE-CLICK QUICK IC PICKER MENU -->
+  <div class="ic-picker-menu hidden" id="ic-picker-menu"></div>
+
+  <!-- SCRIPTS -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
